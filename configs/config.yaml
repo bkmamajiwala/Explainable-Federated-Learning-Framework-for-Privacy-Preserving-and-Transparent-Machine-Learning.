@@ -1,0 +1,117 @@
+# =============================================================================
+# Explainable Federated Learning Framework - Central Configuration
+# =============================================================================
+# All experiment/training parameters are defined here. Do not scatter
+# configuration values across the codebase.
+
+project:
+  name: "Explainable Federated Learning Framework"
+  random_seed: 42
+  version: "1.0.0"
+
+# -----------------------------------------------------------------------------
+# Data
+# -----------------------------------------------------------------------------
+data:
+  raw_path: "data/raw/predictive_maintenance.csv"
+  processed_path: "data/processed/"
+  clients_dir: "data/clients/"
+  # Original predictive-maintenance dataset contains 10,000 samples.
+  # The research paper reports 8,000 training / 2,000 testing samples.
+  n_samples: 10000
+  train_size: 8000
+  test_size: 2000
+  # If the raw CSV cannot be downloaded/loaded, generate a faithful synthetic
+  # reproduction of the documented dataset structure (implementation decision).
+  allow_synthetic_fallback: true
+
+# -----------------------------------------------------------------------------
+# Data partitioning across clients
+# -----------------------------------------------------------------------------
+partition:
+  # iid      -> each client receives a roughly balanced (stratified) share.
+  # non_iid  -> clients receive different class distributions (Dirichlet).
+  # NOTE: Non-IID is an implementation enhancement, NOT a claim from the paper.
+  strategy: "iid"
+  num_clients: 5
+  # Dirichlet concentration used only when strategy == "non_iid".
+  # Lower values -> more skewed per-client distributions.
+  non_iid_alpha: 0.5
+  # Each client keeps a local held-out test split for per-client evaluation.
+  client_test_fraction: 0.2
+
+# -----------------------------------------------------------------------------
+# Federated learning
+# -----------------------------------------------------------------------------
+federated:
+  num_rounds: 10
+  local_epochs: 10
+  batch_size: 64
+  learning_rate: 0.01
+  client_fraction: 1.0          # fraction of clients sampled per round
+  weighted_aggregation: true    # weight client updates by dataset size
+  server_address: "127.0.0.1:8080"
+  round_timeout: 1800           # seconds a single FL round may take before aborting
+  server_timeout: 7200          # overall training wall-clock budget (seconds)
+  # Neural-network architecture shared by all clients (identical across clients).
+  hidden_layers: [64, 32]
+  # Positive-class weight in the BCE loss (0 disables weighting). Mild values
+  # (1.5-4) improve recall of the rare failure class without degrading accuracy.
+  pos_weight: 0.0
+
+# -----------------------------------------------------------------------------
+# Privacy layer
+# -----------------------------------------------------------------------------
+privacy:
+  dp_enabled: true
+  noise_multiplier: 1.0   # std = noise_multiplier * clipping_norm
+  clipping_norm: 1.0      # L2 norm bound applied to the model update
+  secure_aggregation: false  # pairwise-masked (masked-vector) aggregation
+  # Simulation-only shared secret used to derive pairwise masks.
+  # In a real deployment masks would be derived from client-to-client key
+  # agreement (e.g. Diffie-Hellman) - see README limitations.
+  mask_secret: "simulation-only-pairwise-mask-secret"
+
+# -----------------------------------------------------------------------------
+# Explainability (XAI)
+# -----------------------------------------------------------------------------
+explainability:
+  shap_enabled: true
+  lime_enabled: true
+  background_samples: 60      # SHAP background/expectation set
+  explain_samples: 5          # number of test samples explained
+  summary_samples: 50         # test sample size for the SHAP summary/importance plots
+  max_display_features: 6
+
+# -----------------------------------------------------------------------------
+# Federated clustering
+# -----------------------------------------------------------------------------
+clustering:
+  enabled: true
+  num_clusters: 3
+  local_cluster_rounds: 5     # local K-Means reassignment iterations per round
+  rounds: 5                   # federated centroid-update rounds
+
+# -----------------------------------------------------------------------------
+# Evaluation / experiments
+# -----------------------------------------------------------------------------
+evaluation:
+  metrics: ["accuracy", "precision", "recall", "f1"]
+  ann_baseline_epochs: 60   # centralised ANN baseline epochs (tuned)
+  ablation:
+    enabled: true
+    # FL-only, FL+DP, FL+DP+XAI, full framework (FL+DP+XAI+clustering)
+    # Centralized baselines are always computed.
+    fl_only: true
+    fl_dp: true
+    fl_dp_shap: true
+    full: true
+
+# -----------------------------------------------------------------------------
+# Paths
+# -----------------------------------------------------------------------------
+paths:
+  models_dir: "models_saved/"
+  results_dir: "results/"
+  figures_dir: "results/figures/"
+  logs_dir: "results/logs/"

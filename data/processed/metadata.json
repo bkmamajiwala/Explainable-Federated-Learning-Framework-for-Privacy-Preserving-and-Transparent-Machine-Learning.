@@ -1,0 +1,26 @@
+{
+  "n_total": 10000,
+  "n_train": 8000,
+  "n_test": 2000,
+  "n_failures_train": 271,
+  "n_failures_test": 68,
+  "feature_names": [
+    "Air temperature [K]",
+    "Process temperature [K]",
+    "Rotational speed [rpm]",
+    "Torque [Nm]",
+    "Tool wear [min]",
+    "Type_M",
+    "Type_H"
+  ],
+  "numeric_features": [
+    "Air temperature [K]",
+    "Process temperature [K]",
+    "Rotational speed [rpm]",
+    "Torque [Nm]",
+    "Tool wear [min]"
+  ],
+  "categorical_features": [
+    "Type"
+  ]
+}

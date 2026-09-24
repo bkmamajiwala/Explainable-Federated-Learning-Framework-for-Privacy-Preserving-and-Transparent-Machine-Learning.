@@ -1,0 +1,43 @@
+{
+  "strategy": "iid",
+  "num_clients": 5,
+  "non_iid_alpha": null,
+  "total_train_rows": 8000,
+  "clients": {
+    "0": {
+      "n_train": 1280,
+      "n_test": 321,
+      "train_positives": 44,
+      "test_positives": 11,
+      "train_failure_rate": 0.0344
+    },
+    "1": {
+      "n_train": 1280,
+      "n_test": 321,
+      "train_positives": 44,
+      "test_positives": 11,
+      "train_failure_rate": 0.0344
+    },
+    "2": {
+      "n_train": 1280,
+      "n_test": 321,
+      "train_positives": 44,
+      "test_positives": 11,
+      "train_failure_rate": 0.0344
+    },
+    "3": {
+      "n_train": 1280,
+      "n_test": 321,
+      "train_positives": 44,
+      "test_positives": 11,
+      "train_failure_rate": 0.0344
+    },
+    "4": {
+      "n_train": 1276,
+      "n_test": 320,
+      "train_positives": 41,
+      "test_positives": 10,
+      "train_failure_rate": 0.0321
+    }
+  }
+}
